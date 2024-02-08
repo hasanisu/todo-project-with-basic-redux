@@ -10,13 +10,29 @@ import {
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { addTodo } from "@/redux/features/todoSlice";
+import { useAppDispatch } from "@/redux/hooks/hooks";
+import { DialogClose } from "@radix-ui/react-dialog";
 import { FormEvent, useState } from "react";
+
 const AddTodoModal = () => {
   const [task, setTask] = useState("");
   const [description, setDescription] = useState("");
+
+  const dispatch = useAppDispatch();
+
   const onSubmit = (e: FormEvent) => {
     e.preventDefault();
-    console.log({ task, description });
+
+    const randmonString = Math.random().toString().substring(2, 7);
+
+    const taskDetails = {
+      id: randmonString,
+      title: task,
+      description: description,
+    };
+
+    dispatch(addTodo(taskDetails));
   };
   return (
     <Dialog>
@@ -25,14 +41,14 @@ const AddTodoModal = () => {
           Add todo
         </Button>
       </DialogTrigger>
-      <form onSubmit={onSubmit}>
-        <DialogContent className="sm:max-w-[425px]">
-          <DialogHeader>
-            <DialogTitle>Add Task</DialogTitle>
-            <DialogDescription>
-              Add tasks that you want to finish.
-            </DialogDescription>
-          </DialogHeader>
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>Add Task</DialogTitle>
+          <DialogDescription>
+            Add tasks that you want to finish.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={onSubmit}>
           <div className="grid gap-4 py-4">
             <div className="grid grid-cols-4 items-center gap-4">
               <Label htmlFor="task" className="text-right">
@@ -41,7 +57,6 @@ const AddTodoModal = () => {
               <Input
                 onBlur={(e) => setTask(e.target.value)}
                 id="task"
-                value="Pedro Duarte"
                 className="col-span-3"
               />
             </div>
@@ -52,16 +67,17 @@ const AddTodoModal = () => {
               <Input
                 onBlur={(e) => setDescription(e.target.value)}
                 id="description"
-                value="@peduarte"
                 className="col-span-3"
               />
             </div>
           </div>
           <DialogFooter>
-            <Button type="submit">Save changes</Button>
+            <DialogClose asChild>
+              <Button type="submit">Save changes</Button>
+            </DialogClose>
           </DialogFooter>
-        </DialogContent>
-      </form>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };
